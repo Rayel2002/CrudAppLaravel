@@ -6,6 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
 {
-    //
-}
+    protected $fillable = [
+        'reservation_type',
+        'start_time',
+        'end_time',
+        'place',
+        'description',
+    ];
 
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
+
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class, 'reservation_Id');
+    }
+}

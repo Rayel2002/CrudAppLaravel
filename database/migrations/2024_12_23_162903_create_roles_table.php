@@ -9,9 +9,12 @@ class CreateRolesTable extends Migration
     public function up()
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->id('role_Id');
+            $table->id('role_Id'); // Primary key
+            $table->unsignedBigInteger('permission_Id'); // Foreign key to permissions
             $table->string('role');
             $table->timestamps();
+
+            $table->foreign('permission_Id')->references('permission_Id')->on('permissions')->onDelete('cascade');
         });
     }
 

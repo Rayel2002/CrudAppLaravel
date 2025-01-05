@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log; 
 
 class ReservationController extends Controller
 {
@@ -46,9 +47,11 @@ class ReservationController extends Controller
      */
     public function new()
     {
-        $types = Type::all(); // Alle beschikbare types ophalen
-        return view('reservation.new', compact('types')); // Geef $types door aan de view
+        $types = Type::all();
+        $action = route('reservations.save'); // Route voor nieuwe reservering opslaan
+        return view('reservation.new', compact('action', 'types'));
     }
+    
 
     /**
      * Sla een nieuwe reservering op in de database.
@@ -89,8 +92,78 @@ class ReservationController extends Controller
         return redirect()->route('reservations.list')->with('success', 'Reservering succesvol aangemaakt!');
     }
 
-
-
+    public function edit(Reservation $reservation)
+    {
+        $user = Auth::user();
+    
+        // Controleer of de gebruiker de eigenaar is van de reservering
+        if ($reservation->created_by !== $user->id) {
+            abort(403, 'Je hebt geen toegang om deze reservering te bewerken.');
+        }
+    
+        $types = Type::all();
+        $action = route('reservations.update', $reservation->reservation_Id); // Route voor bijwerken
+        $method = 'PUT';
+        $reservation->start_time = substr($reservation->start_time, 0, 5); // Alleen uren en minuten
+        $reservation->end_time = substr($reservation->end_time, 0, 5);
+        
+        return view('reservation.edit', compact('reservation', 'types', 'action', 'method'));
+        
+    }
+    
+    public function update(Request $request, Reservation $reservation)
+    {
+        $user = Auth::user();
+    
+        try {
+            // Controleer of de gebruiker de eigenaar is
+            if ($reservation->created_by !== $user->id) {
+                Log::warning('Unauthorized update attempt', [
+                    'user_id' => $user->id,
+                    'reservation_id' => $reservation->reservation_Id,
+                ]);
+                abort(403, 'Je hebt geen toestemming om deze reservering te bewerken.');
+            }
+    
+            // Validatie
+            $validated = $request->validate([
+                'type_Id' => 'required|exists:types,type_Id',
+                'start_time' => 'required|date_format:H:i', // Controleer op exact H:i-formaat
+                'end_time' => 'required|date_format:H:i|after:start_time', // Controleer op H:i-formaat en volgorde
+                'place' => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ]);
+            
+    
+            // Log de updatepoging
+            Log::info('Updating reservation', [
+                'user_id' => $user->id,
+                'reservation_id' => $reservation->reservation_Id,
+                'data' => $validated,
+            ]);
+    
+            // Bijwerken van de reservering
+            $reservation->update($validated);
+    
+            Log::info('Reservation updated successfully', [
+                'user_id' => $user->id,
+                'reservation_id' => $reservation->reservation_Id,
+            ]);
+    
+            return redirect()->route('reservations.list')->with('success', 'Reservering succesvol bijgewerkt!');
+    
+        } catch (\Exception $e) {
+            // Log de fout
+            Log::error('Error updating reservation', [
+                'user_id' => $user->id,
+                'reservation_id' => $reservation->reservation_Id,
+                'error' => $e->getMessage(),
+            ]);
+    
+            return redirect()->route('reservations.list')->withErrors('Er is een fout opgetreden bij het bijwerken van de reservering.');
+        }
+    }
+    
 
     /**
      * Verwijder een bestaande reservering.

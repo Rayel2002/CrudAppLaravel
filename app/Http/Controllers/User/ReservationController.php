@@ -46,9 +46,10 @@ class ReservationController extends Controller
      */
     public function new()
     {
-        $types = Type::all(); // Alle beschikbare types ophalen
-        return view('reservation.new', compact('types')); // Geef $types door aan de view
+        $types = Type::all(); // Haal alle types op
+        return view('reservation.new', compact('types'));
     }
+
 
     /**
      * Sla een nieuwe reservering op in de database.
@@ -89,7 +90,46 @@ class ReservationController extends Controller
         return redirect()->route('reservations.list')->with('success', 'Reservering succesvol aangemaakt!');
     }
 
+    public function edit(Reservation $reservation)
+    {
+        $user = Auth::user();
 
+        if ($reservation->created_by !== $user->id) {
+            abort(403, 'Je hebt geen toestemming om deze reservering te bewerken.');
+        }
+
+        $types = Type::all();
+
+        return view('reservation.edit', [
+            'reservation' => $reservation,
+            'types' => $types,
+            'action' => route('reservations.update', $reservation->reservation_Id), // Route voor PUT-verzoek
+            'method' => 'PUT', // Methode is PUT
+        ]);
+    }
+    public function update(Request $request, Reservation $reservation)
+    {
+        $user = Auth::user();
+
+        // Controleer of de ingelogde gebruiker eigenaar is van de reservering
+        if ($reservation->created_by !== $user->id) {
+            abort(403, 'Je hebt geen toestemming om deze reservering te bewerken.');
+        }
+
+        // Validatie
+        $validated = $request->validate([
+            'type_Id' => 'required|exists:types,type_Id',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'place' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        // Reservering bijwerken
+        $reservation->update($validated);
+
+        return redirect()->route('reservations.list')->with('success', 'Reservering succesvol bijgewerkt!');
+    }
 
 
     /**

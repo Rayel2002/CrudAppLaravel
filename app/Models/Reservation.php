@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
 {
+    protected $primaryKey = 'reservation_Id'; // Stel de juiste primaire sleutel in
+    public $incrementing = true; // Als de sleutel auto-increment is
+    protected $keyType = 'int'; // Als het type integer is
     protected $fillable = [
         'created_by',
         'type_Id', // Gebruik de juiste kolomnaam

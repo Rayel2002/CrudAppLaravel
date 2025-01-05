@@ -1,9 +1,9 @@
 <?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UsersTableSeeder extends Seeder
 {
@@ -13,28 +13,29 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'Admin User',
                 'email' => 'admin@example.com',
-                'password' => bcrypt('password'),
-                'geboortedatum' => '1990-01-01',
+                'password' => Hash::make('password'),
                 'role_Id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Manager User',
                 'email' => 'manager@example.com',
-                'password' => bcrypt('password'),
-                'geboortedatum' => '1992-05-10',
+                'password' => Hash::make('password'),
                 'role_Id' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Regular User',
                 'email' => 'user@example.com',
-                'password' => bcrypt('password'),
-                'geboortedatum' => '1995-07-15',
+                'password' => Hash::make('password'),
                 'role_Id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 
-        foreach ($users as $user) {
-            User::create($user);
-        }
+        User::insert($users);
     }
 }

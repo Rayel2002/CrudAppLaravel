@@ -1,24 +1,21 @@
 <?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        // Voer de seeders in de juiste volgorde uit
         $this->call([
             PermissionsTableSeeder::class,
             RolesTableSeeder::class,
+            RolePermissionsSeeder::class,
             UsersTableSeeder::class,
+            StatusSeeder::class,
+            CategorySeeder::class,
             ReservationsTableSeeder::class,
             RegistrationsTableSeeder::class,
         ]);
     }
 }
-

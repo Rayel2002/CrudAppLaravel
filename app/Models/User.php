@@ -1,19 +1,28 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 
 class User extends Authenticatable
 {
     use Notifiable;
 
     protected $fillable = [
-        'role_Id', 'name', 'email', 'password', 'email_verified_at', 'login_days', 'remember_token',
+        'role_Id',
+        'name',
+        'email',
+        'password',
+        'email_verified_at',
+        'login_days',
+        'remember_token',
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     protected $casts = [
@@ -35,6 +44,6 @@ class User extends Authenticatable
     // Relatie met Reservations (eigenaarschap)
     public function reservations()
     {
-        return $this->hasMany(Reservation::class, 'created_by');
+        return $this->hasMany(Reservation::class, 'created_by','user_Id');
     }
 }

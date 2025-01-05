@@ -16,7 +16,7 @@ class CreateRegistrationsTable extends Migration
             $table->timestamp('registrationDate')->useCurrent();
             $table->timestamps();
 
-            $table->foreign('user_Id')->references('user_Id')->on('users')->onDelete('cascade');
+            $table->foreign('user_Id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('reservation_Id')->references('reservation_Id')->on('reservations')->onDelete('cascade');
         });
     }

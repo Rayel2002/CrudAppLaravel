@@ -20,7 +20,7 @@ class CreateReservationsTable extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
 
-            $table->foreign('created_by')->references('user_Id')->on('users')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('status_Id')->references('status_Id')->on('statuses')->onDelete('cascade');
             $table->foreign('category_Id')->references('category_Id')->on('categories')->onDelete('cascade');
         });

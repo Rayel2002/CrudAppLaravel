@@ -7,13 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Reservation extends Model
 {
     protected $fillable = [
-        'created_by', 'reservation_type_Id', 'start_time', 'end_time', 'place', 'description', 'status_Id', 'category_Id',
+        'created_by',
+        'reservation_type_Id',
+        'start_time',
+        'end_time',
+        'place',
+        'description',
+        'status_Id',
+        'category_Id',
     ];
 
     // Relatie met User (eigenaarschap)
     public function user()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by', 'user_Id');
     }
 
     // Relatie met Registrations

@@ -22,9 +22,23 @@ class ReservationController extends Controller
     public function list()
     {
         $user = Auth::user(); // Haal de ingelogde gebruiker op
-        $reservations = $user->reservations; // Haal reserveringen van de gebruiker op
+
+        // Haal reserveringen van de ingelogde gebruiker op
+        $reservations = Reservation::where('created_by', $user->id)->get();
 
         return view('reservation.list', compact('reservations'));
+    }
+
+    public function show(Reservation $reservation)
+    {
+        $user = Auth::user();
+
+        // Controleer of de gebruiker toegang heeft tot deze reservering
+        if ($reservation->created_by !== $user->id) {
+            abort(403, 'Je hebt geen toegang tot deze reservering.');
+        }
+
+        return view('reservation.detail', compact('reservation'));
     }
 
     /**
@@ -42,7 +56,7 @@ class ReservationController extends Controller
     public function save(Request $request)
     {
         $user = Auth::user();
-    
+
         // Validatie
         $validated = $request->validate([
             'type_Id' => 'required|exists:types,type_Id', // Controleer of type_Id bestaat
@@ -51,15 +65,15 @@ class ReservationController extends Controller
             'place' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
-    
+
         // Haal de gekoppelde category_Id op via het type
         $type = Type::find($validated['type_Id']);
         $category_Id = $type->category_Id;
-    
+
         if (!$category_Id) {
             return back()->withErrors(['type_Id' => 'Het gekozen type heeft geen gekoppelde categorie.']);
         }
-    
+
         // Maak de reservering aan
         Reservation::create([
             'type_Id' => $validated['type_Id'], // Zorg dat type_Id wordt meegegeven
@@ -71,10 +85,10 @@ class ReservationController extends Controller
             'created_by' => $user->id,
             'status_Id' => 1, // Default status
         ]);
-    
+
         return redirect()->route('reservations.list')->with('success', 'Reservering succesvol aangemaakt!');
     }
-    
+
 
 
 

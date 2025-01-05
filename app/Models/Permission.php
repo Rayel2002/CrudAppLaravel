@@ -1,18 +1,15 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Role;
 
 class Permission extends Model
 {
-    protected $fillable = [
-        'permission',
-    ];
+    protected $primaryKey = 'permission_Id';
+    protected $fillable = ['permission'];
 
     public function roles()
     {
-        return $this->hasMany(Role::class, 'permission_Id');
+        return $this->belongsToMany(Role::class, 'role_permissions', 'permission_Id', 'role_Id');
     }
 }

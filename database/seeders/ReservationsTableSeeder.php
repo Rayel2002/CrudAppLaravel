@@ -1,14 +1,21 @@
 <?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Reservation;
+use App\Models\User;
 
 class ReservationsTableSeeder extends Seeder
 {
     public function run()
     {
+        $users = User::count();
+
+        if ($users === 0) {
+            $this->command->error('No users found. Please run UsersTableSeeder first.');
+            return;
+        }
+
         $reservations = [
             [
                 'reservation_type' => 'Meeting',
@@ -16,18 +23,14 @@ class ReservationsTableSeeder extends Seeder
                 'end_time' => now()->addDays(1)->setTime(11, 0),
                 'place' => 'Conference Room A',
                 'description' => 'Team meeting to discuss project updates.',
-            ],
-            [
-                'reservation_type' => 'Workshop',
-                'start_time' => now()->addDays(2)->setTime(14, 0),
-                'end_time' => now()->addDays(2)->setTime(16, 0),
-                'place' => 'Workshop Hall B',
-                'description' => 'Hands-on workshop on new software tools.',
+                'status_Id' => 1,
+                'category_Id' => 1,
+                'created_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 
-        foreach ($reservations as $reservation) {
-            Reservation::create($reservation);
-        }
+        Reservation::insert($reservations);
     }
 }

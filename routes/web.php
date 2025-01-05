@@ -47,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('auth')->prefix('reserveren')->name('reservations.')->group(function () {
         Route::get('/', [ReservationController::class, 'list'])->name('list');
         Route::get('/new', [ReservationController::class, 'new'])->name('new');
-        Route::post('/save', [ReservationController::class, 'save'])->name('save');
+        Route::post('/save', [ReservationController::class, 'save'])->name('save');        
         Route::delete('/{reservation}/delete', [ReservationController::class, 'delete'])->name('delete');
     });
     

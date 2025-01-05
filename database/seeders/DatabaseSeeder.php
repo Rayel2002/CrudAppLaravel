@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             StatusSeeder::class,
             CategorySeeder::class,
+            TypeTableSeeder::class,
             ReservationsTableSeeder::class,
             RegistrationsTableSeeder::class,
         ]);

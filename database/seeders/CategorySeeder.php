@@ -9,11 +9,9 @@ class CategorySeeder extends Seeder
 {
     public function run()
     {
-        $categories = [
-            ['category_name' => 'Training', 'created_at' => now(), 'updated_at' => now()],
-            ['category_name' => 'Event', 'created_at' => now(), 'updated_at' => now()],
-        ];
-
-        Category::insert($categories);
+        Category::insert([
+            ['category_Id' => 1, 'name' => 'Zakelijk'],
+            ['category_Id' => 2, 'name' => 'Educatief'],
+        ]);
     }
 }
